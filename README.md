@@ -15,9 +15,10 @@ NOTE 3: For the sake of completing this, I set the backend to be local, but I ad
 - AWS cli = 2.13.3 or higher
 
 ## Setup
-Using make, run the following command to get everything up:
+Using make, run the following command to get the plan:
 ```
-make
+make terraform_init
+make terraform_plan
 ``` 
 
 To tear down everything:
