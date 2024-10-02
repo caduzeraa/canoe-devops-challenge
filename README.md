@@ -17,7 +17,6 @@ NOTE 3: For the sake of completing this, I set the backend to be local, but I ad
 ## Setup
 Using make, run the following command to get the plan:
 ```
-make terraform_init
 make terraform_plan
 ``` 
 

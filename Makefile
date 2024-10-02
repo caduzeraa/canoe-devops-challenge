@@ -28,7 +28,7 @@ terraform_init:
 
 terraform_plan:
 	@echo "Applying all on terraform..."
-	cd $(TERRAFORM_DIR) && terraform plan -var="project_name=${DOCKER_IMAGE_NAME}"
+	cd $(TERRAFORM_DIR) && terraform init && terraform plan -var="project_name=${DOCKER_IMAGE_NAME}"
 
 terraform_apply:
 	@echo "Applying all on terraform..."
