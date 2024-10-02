@@ -22,7 +22,7 @@ make terraform_plan
 
 To tear down everything:
 ```
-make terraform_destroy_all
+make terraform_destroy
 ```
 
 ## Application
