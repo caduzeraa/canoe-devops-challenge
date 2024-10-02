@@ -1,5 +1,19 @@
 # canoe-devops-challenge
 
+Terraform is used to build the required resources. It creates the whole infrastructure from network to ECS service.
+The Makefile creates everything in the right order to prevent errors and warnings. Once the ECR repository is configured, the docker will build, tag and push the image to ECR. With the image pushed to ECR, the ECS cluster can use it to spin up the new task inside the service using the ECR image. An ALB is created to expose the private service to the outside.
+
+NOTE 1: I didn't added the HTTPS listener, as it would require an ACM, but the HTTP listener is set to redirect to HTTPS;
+NOTE 2: Due to the fact that the only listener is set to redirect, the apply fails because the service didn't find the loadbalancer associated with the target group;
+NOTE 3: For the sake of completing this, I set the backend to be local, but I added a commented backend of type s3 to showcase how would I do it. 
+
+## Requirements
+- Make = 4.2.1 or higher
+- Terraform = v1.9.0
+- Docker = 20.10.21 or higher
+- Python3 = 3.9 or higher
+- AWS cli = 2.13.3 or higher
+
 ## Setup
 Using make, run the following command to get everything up:
 ```
@@ -44,8 +58,6 @@ The terrform code will create the following architecture:
 - Service and tasks will be deployed on private subnets, running on Fargate;
 - ECR images used as source for the service deployments;
 - ECS service output to Cloudwatch;
-
-NOTE: I didn't added the HTTPS listener, as it would require an ACM, but the HTTP listener is set to redirect to HTTPS;
 
 ### Terraform-docs
 

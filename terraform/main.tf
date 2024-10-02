@@ -31,57 +31,60 @@ module "ecs" {
       }
     }
   }
+}
 
-  services = {
+module "ecs_service" {
+  source = "terraform-aws-modules/ecs/aws//modules/service"
+
+  name        = var.project_name
+  cluster_arn = module.ecs.cluster_arn
+
+  cpu    = 1024
+  memory = 4096
+
+  container_definitions = {
     (var.project_name) = {
-      cpu    = 1024
-      memory = 4096
+      cpu       = 512
+      memory    = 1024
+      essential = true
+      image     = "${aws_ecr_repository.this.repository_url}:latest"
+      port_mappings = [
+        {
+          name          = var.project_name
+          containerPort = var.app_port
+          protocol      = "tcp"
+        }
+      ]
+      readonly_root_filesystem = false
+      memory_reservation = 100
+      enable_cloudwatch_logging = true
+    }
+  }
 
-      container_definitions = {
-        (var.project_name) = {
-          cpu       = 512
-          memory    = 1024
-          essential = true
-          image     = "${aws_ecr_repository.this.repository_url}:latest"
-          port_mappings = [
-            {
-              name          = var.project_name
-              containerPort = var.app_port
-              protocol      = "tcp"
-            }
-          ]
-          readonly_root_filesystem = false
-          memory_reservation = 100
-          enable_cloudwatch_logging = true
-        }
-      }
+  load_balancer = {
+    service = {
+      target_group_arn = "${aws_lb_target_group.target_group.arn}"
+      container_name   = var.project_name
+      container_port   = var.app_port
+    }
+  }
 
-      load_balancer = {
-        service = {
-          target_group_arn = "${aws_lb_target_group.target_group.arn}"
-          container_name   = var.project_name
-          container_port   = var.app_port
-        }
-      }
-
-      subnet_ids = module.vpc.private_subnets
-      security_group_rules = {
-        alb_ingress = {
-          type                     = "ingress"
-          from_port                = var.app_port
-          to_port                  = var.app_port
-          protocol                 = "tcp"
-          description              = "Service port"
-          source_security_group_id = aws_security_group.alb.id
-        }
-        egress_all = {
-          type        = "egress"
-          from_port   = 0
-          to_port     = 0
-          protocol    = "-1"
-          cidr_blocks = ["0.0.0.0/0"]
-        }
-      }
+  subnet_ids = module.vpc.private_subnets
+  security_group_rules = {
+    alb_ingress = {
+      type                     = "ingress"
+      from_port                = var.app_port
+      to_port                  = var.app_port
+      protocol                 = "tcp"
+      description              = "Service port"
+      source_security_group_id = aws_security_group.alb.id
+    }
+    egress_all = {
+      type        = "egress"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
     }
   }
 }
