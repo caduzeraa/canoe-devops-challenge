@@ -1,0 +1,8 @@
+terraform {
+  backend "s3" {
+    bucket = "canoe-tfstates-bucket-37lk0oj"
+    key    = "tfstates/canoe"
+    region = "us-east-1"
+    profile = "personal"
+  }
+}
